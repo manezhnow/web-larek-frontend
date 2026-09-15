@@ -20,6 +20,7 @@
       @include mixins.flex(row);
       justify-content: center;
       align-items: center;
+      flex-shrink: 0;
       font-size: 1.5rem;
       width: 55px;
       height: 55px;
@@ -33,7 +34,12 @@
       @include mixins.icon(2rem, 'trash');
       @include mixins.link($hover, white);
       opacity: 0.5;
+      flex-shrink: 0;
       margin-left: 4rem;
+
+      @media (max-width: 768px) {
+        margin-left: 1rem;
+      }
     }
   }
 }
