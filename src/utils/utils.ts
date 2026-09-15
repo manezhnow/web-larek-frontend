@@ -2,11 +2,11 @@ export function pascalToKebab(value: string): string {
     return value.replace(/([a-z0–9])([A-Z])/g, "$1-$2").toLowerCase();
 }
 
-export function isSelector(x: any): x is string {
+export function isSelector(x: unknown): x is string {
     return (typeof x === "string") && x.length > 1;
 }
 
-export function isEmpty(value: any): boolean {
+export function isEmpty(value: unknown): boolean {
     return value === null || value === undefined;
 }
 
@@ -66,7 +66,7 @@ export function getObjectProperties(obj: object, filter?: (name: string, prop: P
         )
     )
         .filter(([name, prop]: [string, PropertyDescriptor]) => filter ? filter(name, prop) : (name !== 'constructor'))
-        .map(([name, prop]) => name);
+        .map(([name]) => name);
 }
 
 /**
@@ -81,10 +81,10 @@ export function setElementData<T extends Record<string, unknown> | object>(el: H
 /**
  * Получает типизированные данные из dataset атрибутов элемента
  */
-export function getElementData<T extends Record<string, unknown>>(el: HTMLElement, scheme: Record<string, Function>): T {
+export function getElementData<T extends Record<string, unknown>>(el: HTMLElement, scheme: Record<string, (value: string) => unknown>): T {
     const data: Partial<T> = {};
     for (const key in el.dataset) {
-        data[key as keyof T] = scheme[key](el.dataset[key]);
+        data[key as keyof T] = scheme[key](el.dataset[key]) as T[keyof T];
     }
     return data as T;
 }
@@ -121,8 +121,7 @@ export function createElement<
             if (isPlainObject(value) && key === 'dataset') {
                 setElementData(element, value);
             } else {
-                // @ts-expect-error fix indexing later
-                element[key] = isBoolean(value) ? value : String(value);
+                (element as unknown as Record<string, unknown>)[key] = isBoolean(value) ? value : String(value);
             }
         }
     }
@@ -132,4 +131,11 @@ export function createElement<
         }
     }
     return element;
+}
+/**
+ * Форматирует цену товара с учётом валюты магазина
+ */
+export function formatPrice(price: number | null, currency: string, priceless: string): string {
+    if (price === null) return priceless;
+    return `${price.toLocaleString('ru-RU')} ${currency}`;
 }
