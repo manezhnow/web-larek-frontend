@@ -1,3 +1,5 @@
+import { priceLocale } from './constants';
+
 export function pascalToKebab(value: string): string {
     return value.replace(/([a-z0–9])([A-Z])/g, "$1-$2").toLowerCase();
 }
@@ -137,5 +139,5 @@ export function createElement<
  */
 export function formatPrice(price: number | null, currency: string, priceless: string): string {
     if (price === null) return priceless;
-    return `${price.toLocaleString('ru-RU')} ${currency}`;
+    return `${price.toLocaleString(priceLocale)} ${currency}`;
 }

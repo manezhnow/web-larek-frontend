@@ -14,17 +14,18 @@ import { paymentMethods, validationErrors } from '../../utils/constants';
  * Модель покупателя: данные для оформления заказа и их валидация.
  */
 export class BuyerModel implements IBuyerModel {
-	protected data: IBuyer = BuyerModel.empty();
+	protected data: IBuyer = BuyerModel.createEmpty();
 
 	constructor(protected events: IEvents) {}
 
-	protected static empty(): IBuyer {
+	/** Создаёт пустые данные покупателя */
+	protected static createEmpty(): IBuyer {
 		return { payment: null, address: '', email: '', phone: '' };
 	}
 
 	setField(field: BuyerField, value: string): void {
 		if (field === 'payment') {
-			this.data.payment = BuyerModel.toPayment(value);
+			this.data.payment = BuyerModel.parsePayment(value);
 		} else {
 			this.data[field] = value.trim();
 		}
@@ -32,7 +33,7 @@ export class BuyerModel implements IBuyerModel {
 	}
 
 	/** Приводит строку к способу оплаты, неизвестное значение сбрасывает */
-	protected static toPayment(value: string): PaymentMethod | null {
+	protected static parsePayment(value: string): PaymentMethod | null {
 		const method = paymentMethods.find((item) => item === value);
 		return method ?? null;
 	}
@@ -59,7 +60,7 @@ export class BuyerModel implements IBuyerModel {
 	}
 
 	clear(): void {
-		this.data = BuyerModel.empty();
+		this.data = BuyerModel.createEmpty();
 		this.events.emit(AppEvent.BuyerChanged);
 	}
 }

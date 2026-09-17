@@ -1,5 +1,6 @@
 import { Api, ApiListResponse } from '../base/api';
 import { ILarekApi, IOrderRequest, IOrderResult, IProduct } from '../../types';
+import { apiEndpoints } from '../../utils/constants';
 
 /**
  * API магазина: получение каталога и оформление заказа.
@@ -14,7 +15,7 @@ export class LarekApi extends Api implements ILarekApi {
 	}
 
 	getProducts(): Promise<IProduct[]> {
-		return this.get('/product/').then((data) =>
+		return this.get(apiEndpoints.products).then((data) =>
 			(data as ApiListResponse<IProduct>).items.map((item) => ({
 				...item,
 				image: this.cdn + item.image,
@@ -23,6 +24,6 @@ export class LarekApi extends Api implements ILarekApi {
 	}
 
 	orderProducts(order: IOrderRequest): Promise<IOrderResult> {
-		return this.post('/order', order).then((data) => data as IOrderResult);
+		return this.post(apiEndpoints.order, order).then((data) => data as IOrderResult);
 	}
 }

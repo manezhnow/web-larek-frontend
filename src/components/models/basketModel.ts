@@ -16,17 +16,17 @@ export class BasketModel implements IBasketModel {
 	add(item: IProduct): void {
 		if (this.has(item.id) || item.price === null) return;
 		this.items = [...this.items, item];
-		this.changed();
+		this.emitChange();
 	}
 
 	remove(id: string): void {
 		this.items = this.items.filter((item) => item.id !== id);
-		this.changed();
+		this.emitChange();
 	}
 
 	clear(): void {
 		this.items = [];
-		this.changed();
+		this.emitChange();
 	}
 
 	has(id: string): boolean {
@@ -41,7 +41,8 @@ export class BasketModel implements IBasketModel {
 		return this.items.reduce((sum, item) => sum + (item.price ?? 0), 0);
 	}
 
-	protected changed(): void {
+	/** Сообщает об изменении содержимого корзины */
+	protected emitChange(): void {
 		this.events.emit(AppEvent.BasketChanged);
 	}
 }

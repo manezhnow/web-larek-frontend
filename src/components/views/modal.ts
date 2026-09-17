@@ -1,7 +1,7 @@
 import { Component } from '../base/component';
 import { IEvents } from '../base/events';
 import { ensureElement } from '../../utils/utils';
-import { classModifiers } from '../../utils/constants';
+import { classModifiers, keyNames } from '../../utils/constants';
 import { AppEvent, IModalView } from '../../types';
 
 /**
@@ -50,6 +50,6 @@ export class Modal extends Component<IModalView> {
 	}
 
 	protected handleEscape(event: KeyboardEvent): void {
-		if (event.key === 'Escape') this.close();
+		if (event.key === keyNames.escape) this.close();
 	}
 }

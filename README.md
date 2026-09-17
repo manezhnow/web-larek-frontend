@@ -41,7 +41,7 @@
 
 - **Model** хранит данные и правила: каталог, корзину, покупателя. О DOM не знает, об изменениях сообщает событием.
 - **View** отвечает только за свой фрагмент интерфейса: принимает данные через `render()`, о действиях пользователя сообщает событием или колбэком. Бизнес-логики и запросов к серверу в представлениях нет.
-- **Presenter** (`src/index.ts`) создаёт модели, представления и API, подписывается на события и связывает слои.
+- **Presenter** (`src/index.ts`) создаёт модели, представления и API, подписывается на события и связывает слои. Состояние интерфейса он считает сам: `getPreviewButtonState()` — надпись и блокировка кнопки превью, `getFormState()` — доступность отправки формы и список ошибок.
 
 Слои общаются через брокер `EventEmitter` (паттерн **Observer**). Классы не создают друг друга: зависимости передаются в конструктор.
 
@@ -91,24 +91,24 @@
 ## Сервисы
 
 **`LarekApi`** наследует `Api`, реализует `ILarekApi`. Используется только презентером.
-- `constructor(cdn: string, baseUrl: string, options?: RequestInit)`
-- `getProducts(): Promise<IProduct[]>` — `GET /product/`, к изображениям добавляется адрес CDN
-- `orderProducts(order: IOrderRequest): Promise<IOrderResult>` — `POST /order`
+- `constructor(cdn: string, baseUrl: string, options?: RequestInit)` — адрес CDN хранится в поле `readonly cdn`
+- `getProducts(): Promise<IProduct[]>` — `GET apiEndpoints.products`, к изображениям добавляется адрес CDN
+- `orderProducts(order: IOrderRequest): Promise<IOrderResult>` — `POST apiEndpoints.order`
 
 ## Представления
 
 ```
 Component<T>
 ├── Page              главная: catalog, counter, locked; клик по корзине → basket:open
-├── Modal             окно: content; open(content?) → modal:open; close() → modal:close
+├── Modal             окно: content; open(content?) → modal:open; close() → modal:close; isOpen()
 ├── Basket            корзина: items, total; «Оформить» → order:open
 ├── Success           итог заказа: total; кнопка → actions.onClick
 ├── Card<T>           абстрактная: title, price («Бесценно» при null)
 │   ├── CardBasket    строка корзины: index; удаление → actions.onClick
-│   └── CardMedia<T>  абстрактная: category (CSS-модификатор), image
+│   └── CardMedia<T>  абстрактная: category (CSS-модификатор), image; title также задаёт alt
 │       ├── CardCatalog   карточка каталога; клик → actions.onClick
 │       └── CardPreview   превью: description, button, buttonDisabled; кнопка → actions.onClick
-└── Form<T>           абстрактная: valid, errors; ввод → form:change; отправка → `${name}:submit`
+└── Form<T>           абстрактная: valid, errors; ввод → form:change; отправка → `${name}${submitEventSuffix}`
     ├── OrderForm     payment, address; клик по кнопке оплаты → form:change
     └── ContactsForm  email, phone
 ```
@@ -117,7 +117,7 @@ Component<T>
 
 ## Типы данных
 
-Все типы в `src/types/index.ts`.
+Все типы данных, интерфейсы классов и имена событий — в `src/types/index.ts`. Рядом с классами объявлены только вспомогательные наборы полей карточек: `CardBaseView` (`card.ts`) и `CardMediaView` (`cardMedia.ts`).
 
 ```ts
 type ProductCategory = 'софт-скил' | 'хард-скил' | 'другое' | 'дополнительное' | 'кнопка';
@@ -200,10 +200,17 @@ interface IOrderResult {
 ## Утилиты и константы
 
 - `ensureElement`, `ensureAllElements`, `cloneTemplate`, `createElement` — работа с DOM
-- `formatPrice(price, currency, priceless)` — цена с разделением разрядов или «Бесценно»
-- `API_URL`, `CDN_URL`, `settings` — адреса и подписи
+- `formatPrice(price, currency, priceless)` — цена с разделением разрядов (`priceLocale`) или «Бесценно»
+
+Константы (`src/utils/constants.ts`) — все значения, зашитые в логику, вынесены сюда:
+
+- `API_URL`, `CDN_URL` — адреса сервера и хранилища изображений, `apiEndpoints` — пути запросов
+- `settings` — подписи интерфейса: валюта, «Бесценно», «Корзина пуста», «Списано», разделитель ошибок формы, текст ошибки загрузки каталога
+- `priceLocale` — локаль форматирования цены
 - `categoryModifiers` — категория → CSS-модификатор
 - `classModifiers` — CSS-модификаторы, переключаемые представлениями
 - `previewButtonLabels` — надписи на кнопке превью («Купить», «Убрать», «Недоступно»)
 - `validationErrors` — тексты ошибок валидации данных покупателя
 - `paymentButtons` — имя кнопки → способ оплаты, `paymentMethods` — список допустимых способов оплаты
+- `keyNames` — клавиши, которые обрабатывают представления (Escape в `Modal`)
+- `submitEventSuffix` — суффикс имени события отправки формы

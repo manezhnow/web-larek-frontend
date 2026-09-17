@@ -3,13 +3,32 @@ import { BuyerField, PaymentMethod, ProductCategory } from '../types';
 export const API_URL = `${process.env.API_ORIGIN}/api/weblarek`;
 export const CDN_URL = `${process.env.API_ORIGIN}/content/weblarek`;
 
+/** Пути запросов к серверу */
+export const apiEndpoints = {
+	products: '/product/',
+	order: '/order',
+};
+
 /** Тексты интерфейса */
 export const settings = {
 	currency: 'синапсов',
 	pricelessLabel: 'Бесценно',
 	emptyBasketLabel: 'Корзина пуста',
 	writeOffLabel: 'Списано',
+	errorsSeparator: '; ',
+	catalogErrorLabel: 'Не удалось загрузить каталог:',
 };
+
+/** Локаль для разделения разрядов в цене */
+export const priceLocale = 'ru-RU';
+
+/** Клавиши, которые обрабатывают представления */
+export const keyNames = {
+	escape: 'Escape',
+};
+
+/** Суффикс имени события отправки формы: `${name}:submit` */
+export const submitEventSuffix = ':submit';
 
 /** Надписи на кнопке детальной карточки товара */
 export const previewButtonLabels = {

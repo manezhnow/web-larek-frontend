@@ -1,6 +1,7 @@
 import { Component } from '../base/component';
 import { IEvents } from '../base/events';
 import { ensureElement } from '../../utils/utils';
+import { settings, submitEventSuffix } from '../../utils/constants';
 import { AppEvent, BuyerField, IFormChangeEvent, IFormState } from '../../types';
 
 /**
@@ -24,7 +25,7 @@ export abstract class Form<T> extends Component<IFormState & T> {
 
 		this.container.addEventListener('submit', (event: Event) => {
 			event.preventDefault();
-			this.events.emit(`${this.container.name}:submit`);
+			this.events.emit(`${this.container.name}${submitEventSuffix}`);
 		});
 	}
 
@@ -37,6 +38,6 @@ export abstract class Form<T> extends Component<IFormState & T> {
 	}
 
 	set errors(value: string[]) {
-		this.setText(this.errorsElement, value.join('; '));
+		this.setText(this.errorsElement, value.join(settings.errorsSeparator));
 	}
 }

@@ -14,7 +14,7 @@ import { CardBasket } from './components/views/cardBasket';
 import { OrderForm } from './components/views/orderForm';
 import { ContactsForm } from './components/views/contactsForm';
 import { Success } from './components/views/success';
-import { API_URL, CDN_URL, previewButtonLabels } from './utils/constants';
+import { API_URL, CDN_URL, previewButtonLabels, settings } from './utils/constants';
 import { cloneTemplate, ensureElement } from './utils/utils';
 import {
 	AppEvent,
@@ -225,4 +225,4 @@ basketView.render({ items: [], total: 0 });
 api
 	.getProducts()
 	.then((items) => catalog.setItems(items))
-	.catch((error) => console.error('Не удалось загрузить каталог:', error));
+	.catch((error) => console.error(settings.catalogErrorLabel, error));
