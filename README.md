@@ -52,7 +52,7 @@
                                               └─► LarekApi ─► сервер
 ```
 
-Пример, нажатие «Купить»: `CardPreview` вызывает колбэк, презентер генерирует `card:toggle`, берёт выбранный товар из `CatalogModel` и вызывает `BasketModel.add()`. Модель генерирует `basket:changed`, презентер обновляет счётчик в `Page`, список в `Basket` и кнопку в `CardPreview`.
+Пример, нажатие «Купить»: `CardPreview` вызывает колбэк, презентер генерирует `card:toggle`, берёт выбранный товар из `CatalogModel` и вызывает `BasketModel.add()`. Модель генерирует `basket:changed`, презентер обновляет счётчик в `Page`, список в `Basket` и кнопку в `CardPreview`. Надпись на кнопке и её блокировку вычисляет презентер (`getPreviewButtonState`), представление лишь выводит готовые значения.
 
 ## Базовый код
 
@@ -103,11 +103,11 @@ Component<T>
 ├── Modal             окно: content; open(content?) → modal:open; close() → modal:close
 ├── Basket            корзина: items, total; «Оформить» → order:open
 ├── Success           итог заказа: total; кнопка → actions.onClick
-├── Card<T>           абстрактная: id, title, price («Бесценно» при null)
+├── Card<T>           абстрактная: title, price («Бесценно» при null)
 │   ├── CardBasket    строка корзины: index; удаление → actions.onClick
 │   └── CardMedia<T>  абстрактная: category (CSS-модификатор), image
 │       ├── CardCatalog   карточка каталога; клик → actions.onClick
-│       └── CardPreview   превью: description, inBasket; без цены кнопка «Недоступно»
+│       └── CardPreview   превью: description, button, buttonDisabled; кнопка → actions.onClick
 └── Form<T>           абстрактная: valid, errors; ввод → form:change; отправка → `${name}:submit`
     ├── OrderForm     payment, address; клик по кнопке оплаты → form:change
     └── ContactsForm  email, phone
@@ -167,7 +167,7 @@ interface IOrderResult {
 | --- | --- |
 | `IPageView` | `catalog: HTMLElement[]`, `counter: number`, `locked: boolean` |
 | `IModalView` | `content: HTMLElement` |
-| `ICardView extends IProduct` | `inBasket: boolean`, `index: number`; карточки берут нужные поля через `Pick` |
+| `ICardView extends IProduct` | `button: string`, `buttonDisabled: boolean`, `index: number`; карточки берут нужные поля через `Pick` |
 | `IBasketView` | `items: HTMLElement[]`, `total: number` |
 | `IFormState` | `valid: boolean`, `errors: string[]` |
 | `IOrderFormView` | `Pick<IBuyer, 'payment' \| 'address'>` |
@@ -184,8 +184,8 @@ interface IOrderResult {
 | Событие | Источник | Данные | Реакция презентера |
 | --- | --- | --- | --- |
 | `catalog:changed` | `CatalogModel` | — | отрисовать карточки в `Page` |
-| `preview:changed` | `CatalogModel` | — | открыть `CardPreview` в `Modal` |
-| `basket:changed` | `BasketModel` | — | обновить счётчик, `Basket`, кнопку превью |
+| `preview:changed` | `CatalogModel` | — | вычислить состояние кнопки и открыть `CardPreview` в `Modal` |
+| `basket:changed` | `BasketModel` | — | обновить счётчик, `Basket` и состояние кнопки превью |
 | `buyer:changed` | `BuyerModel` | — | проверить данные, обновить формы |
 | `card:select` | `CardCatalog` (колбэк) | `{ id }` | `CatalogModel.setPreview(id)` |
 | `card:toggle` | `CardPreview` (колбэк) | — | добавить или убрать товар из корзины |
@@ -203,4 +203,7 @@ interface IOrderResult {
 - `formatPrice(price, currency, priceless)` — цена с разделением разрядов или «Бесценно»
 - `API_URL`, `CDN_URL`, `settings` — адреса и подписи
 - `categoryModifiers` — категория → CSS-модификатор
+- `classModifiers` — CSS-модификаторы, переключаемые представлениями
+- `previewButtonLabels` — надписи на кнопке превью («Купить», «Убрать», «Недоступно»)
+- `validationErrors` — тексты ошибок валидации данных покупателя
 - `paymentButtons` — имя кнопки → способ оплаты, `paymentMethods` — список допустимых способов оплаты

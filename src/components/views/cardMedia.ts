@@ -1,6 +1,6 @@
 import { Card } from './card';
 import { ensureElement } from '../../utils/utils';
-import { categoryModifiers } from '../../utils/constants';
+import { categoryModifiers, classModifiers } from '../../utils/constants';
 import { ICardView, ProductCategory } from '../../types';
 
 /** Данные карточки с изображением */
@@ -27,7 +27,11 @@ export abstract class CardMedia<T> extends Card<CardMediaView & T> {
 	set category(value: ProductCategory) {
 		this.setText(this.categoryElement, value);
 		Object.entries(categoryModifiers).forEach(([name, modifier]) => {
-			this.toggleClass(this.categoryElement, `card__category_${modifier}`, name === value);
+			this.toggleClass(
+				this.categoryElement,
+				`${classModifiers.categoryPrefix}${modifier}`,
+				name === value
+			);
 		});
 	}
 

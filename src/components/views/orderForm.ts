@@ -1,7 +1,7 @@
 import { Form } from './form';
 import { IEvents } from '../base/events';
 import { ensureAllElements, ensureElement } from '../../utils/utils';
-import { paymentButtons } from '../../utils/constants';
+import { classModifiers, paymentButtons } from '../../utils/constants';
 import { IOrderFormView, PaymentMethod } from '../../types';
 
 /**
@@ -26,7 +26,7 @@ export class OrderForm extends Form<IOrderFormView> {
 
 	set payment(value: PaymentMethod | null) {
 		this.paymentButtonElements.forEach((button) => {
-			this.toggleClass(button, 'button_alt-active', paymentButtons[button.name] === value);
+			this.toggleClass(button, classModifiers.paymentActive, paymentButtons[button.name] === value);
 		});
 	}
 

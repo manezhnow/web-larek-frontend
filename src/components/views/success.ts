@@ -21,7 +21,7 @@ export class Success extends Component<ISuccessView> {
 	set total(value: number) {
 		this.setText(
 			this.descriptionElement,
-			`Списано ${formatPrice(value, settings.currency, settings.pricelessLabel)}`
+			`${settings.writeOffLabel} ${formatPrice(value, settings.currency, settings.pricelessLabel)}`
 		);
 	}
 }

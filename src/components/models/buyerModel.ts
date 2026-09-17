@@ -8,7 +8,7 @@ import {
 	IOrderData,
 	PaymentMethod,
 } from '../../types';
-import { paymentMethods } from '../../utils/constants';
+import { paymentMethods, validationErrors } from '../../utils/constants';
 
 /**
  * Модель покупателя: данные для оформления заказа и их валидация.
@@ -44,10 +44,10 @@ export class BuyerModel implements IBuyerModel {
 	/** Ошибки всех незаполненных полей */
 	validate(): FormErrors {
 		const errors: FormErrors = {};
-		if (!this.data.payment) errors.payment = 'Выберите способ оплаты';
-		if (!this.data.address) errors.address = 'Необходимо указать адрес';
-		if (!this.data.email) errors.email = 'Необходимо указать email';
-		if (!this.data.phone) errors.phone = 'Необходимо указать телефон';
+		if (!this.data.payment) errors.payment = validationErrors.payment;
+		if (!this.data.address) errors.address = validationErrors.address;
+		if (!this.data.email) errors.email = validationErrors.email;
+		if (!this.data.phone) errors.phone = validationErrors.phone;
 		return errors;
 	}
 

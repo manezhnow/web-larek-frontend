@@ -1,6 +1,7 @@
 import { Component } from '../base/component';
 import { IEvents } from '../base/events';
 import { ensureElement } from '../../utils/utils';
+import { classModifiers } from '../../utils/constants';
 import { AppEvent, IPageView } from '../../types';
 
 /**
@@ -34,6 +35,6 @@ export class Page extends Component<IPageView> {
 	}
 
 	set locked(value: boolean) {
-		this.toggleClass(this.wrapperElement, 'page__wrapper_locked', value);
+		this.toggleClass(this.wrapperElement, classModifiers.pageLocked, value);
 	}
 }

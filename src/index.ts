@@ -14,9 +14,17 @@ import { CardBasket } from './components/views/cardBasket';
 import { OrderForm } from './components/views/orderForm';
 import { ContactsForm } from './components/views/contactsForm';
 import { Success } from './components/views/success';
-import { API_URL, CDN_URL } from './utils/constants';
+import { API_URL, CDN_URL, previewButtonLabels } from './utils/constants';
 import { cloneTemplate, ensureElement } from './utils/utils';
-import { AppEvent, BuyerField, IFormChangeEvent, IFormState, IProductIdEvent } from './types';
+import {
+	AppEvent,
+	BuyerField,
+	ICardView,
+	IFormChangeEvent,
+	IFormState,
+	IProduct,
+	IProductIdEvent,
+} from './types';
 
 // ---------- Инфраструктура ----------
 
@@ -66,6 +74,20 @@ function isErrorText(value: string | undefined): value is string {
 }
 
 /**
+ * Состояние кнопки детальной карточки:
+ * товар без цены купить нельзя, товар из корзины можно убрать.
+ */
+function getPreviewButtonState(item: IProduct): Pick<ICardView, 'button' | 'buttonDisabled'> {
+	if (item.price === null) {
+		return { button: previewButtonLabels.unavailable, buttonDisabled: true };
+	}
+	return {
+		button: basket.has(item.id) ? previewButtonLabels.remove : previewButtonLabels.buy,
+		buttonDisabled: false,
+	};
+}
+
+/**
  * Состояние формы по её полям: доступность отправки и список ошибок.
  * При showErrors === false форма считается проверенной, но ошибки не показываются.
  */
@@ -82,7 +104,12 @@ events.on(AppEvent.CatalogChanged, () => {
 		catalog: catalog.getItems().map((item) =>
 			new CardCatalog(cloneTemplate(templates.cardCatalog), {
 				onClick: () => events.emit<IProductIdEvent>(AppEvent.CardSelect, { id: item.id }),
-			}).render(item)
+			}).render({
+				title: item.title,
+				price: item.price,
+				category: item.category,
+				image: item.image,
+			})
 		),
 	});
 });
@@ -90,7 +117,16 @@ events.on(AppEvent.CatalogChanged, () => {
 events.on(AppEvent.PreviewChanged, () => {
 	const item = catalog.getPreview();
 	if (!item) return;
-	modal.open(preview.render({ ...item, inBasket: basket.has(item.id) }));
+	modal.open(
+		preview.render({
+			title: item.title,
+			price: item.price,
+			category: item.category,
+			image: item.image,
+			description: item.description,
+			...getPreviewButtonState(item),
+		})
+	);
 });
 
 events.on(AppEvent.BasketChanged, () => {
@@ -100,12 +136,12 @@ events.on(AppEvent.BasketChanged, () => {
 		items: basket.getItems().map((item, index) =>
 			new CardBasket(cloneTemplate(templates.cardBasket), {
 				onClick: () => events.emit<IProductIdEvent>(AppEvent.CardRemove, { id: item.id }),
-			}).render({ id: item.id, title: item.title, price: item.price, index: index + 1 })
+			}).render({ title: item.title, price: item.price, index: index + 1 })
 		),
 	});
 
 	const item = catalog.getPreview();
-	if (item) preview.render({ inBasket: basket.has(item.id) });
+	if (item) preview.render(getPreviewButtonState(item));
 });
 
 events.on(AppEvent.BuyerChanged, () => {

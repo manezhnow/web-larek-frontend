@@ -29,7 +29,7 @@ export class Basket extends Component<IBasketView> {
 			this.listElement.replaceChildren(...items);
 		} else {
 			this.listElement.replaceChildren(
-				createElement<HTMLParagraphElement>('p', { textContent: 'Корзина пуста' })
+				createElement<HTMLParagraphElement>('p', { textContent: settings.emptyBasketLabel })
 			);
 		}
 		this.setDisabled(this.orderButton, items.length === 0);

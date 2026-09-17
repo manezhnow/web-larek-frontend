@@ -4,7 +4,7 @@ import { settings } from '../../utils/constants';
 import { ICardView } from '../../types';
 
 /** Данные, общие для всех карточек */
-export type CardBaseView = Pick<ICardView, 'id' | 'title' | 'price'>;
+export type CardBaseView = Pick<ICardView, 'title' | 'price'>;
 
 /**
  * Базовая карточка товара: название и цена.
@@ -17,14 +17,6 @@ export abstract class Card<T> extends Component<CardBaseView & T> {
 		super(container);
 		this.titleElement = ensureElement('.card__title', container);
 		this.priceElement = ensureElement('.card__price', container);
-	}
-
-	set id(value: string) {
-		this.container.dataset.id = value;
-	}
-
-	get id(): string {
-		return this.container.dataset.id ?? '';
 	}
 
 	set title(value: string) {

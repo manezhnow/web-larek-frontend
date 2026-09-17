@@ -106,8 +106,10 @@ export interface IModalView {
 
 /** Данные карточки: товар и состояние отображения */
 export interface ICardView extends IProduct {
-	/** Состояние кнопки карточки в превью */
-	inBasket: boolean;
+	/** Надпись на кнопке карточки в превью */
+	button: string;
+	/** Заблокирована ли кнопка карточки в превью */
+	buttonDisabled: boolean;
 	/** Порядковый номер в корзине */
 	index: number;
 }

@@ -5,11 +5,9 @@ import { ICardActions, ICardView } from '../../types';
 /**
  * Детальная карточка товара в модальном окне.
  */
-export class CardPreview extends CardMedia<Pick<ICardView, 'description' | 'inBasket'>> {
+export class CardPreview extends CardMedia<Pick<ICardView, 'description' | 'button' | 'buttonDisabled'>> {
 	protected descriptionElement: HTMLElement;
 	protected buttonElement: HTMLButtonElement;
-	protected isPriceless = false;
-	protected isInBasket = false;
 
 	constructor(container: HTMLElement, actions: ICardActions) {
 		super(container);
@@ -22,20 +20,11 @@ export class CardPreview extends CardMedia<Pick<ICardView, 'description' | 'inBa
 		this.setText(this.descriptionElement, value);
 	}
 
-	set price(value: number | null) {
-		super.price = value;
-		this.isPriceless = value === null;
-		this.updateButton();
+	set button(value: string) {
+		this.setText(this.buttonElement, value);
 	}
 
-	set inBasket(value: boolean) {
-		this.isInBasket = value;
-		this.updateButton();
-	}
-
-	protected updateButton(): void {
-		this.setDisabled(this.buttonElement, this.isPriceless);
-		if (this.isPriceless) this.setText(this.buttonElement, 'Недоступно');
-		else this.setText(this.buttonElement, this.isInBasket ? 'Убрать' : 'Купить');
+	set buttonDisabled(value: boolean) {
+		this.setDisabled(this.buttonElement, value);
 	}
 }
